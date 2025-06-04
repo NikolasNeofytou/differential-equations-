@@ -1,11 +1,10 @@
 # differential-equations-
-This repository contains a simple command line tool to visualise differential
-equations.  The program is written in Python and relies on ``sympy`` and
-``matplotlib`` for solving and plotting.
+
+This repository contains a small web application to visualise differential equations. The backend is written in Python using Flask and SymPy, while MathJax renders equations in the browser.
 
 ### Installation
 
-Install the dependencies with ``pip``:
+Install the dependencies with `pip`:
 
 ```bash
 pip install -r requirements.txt
@@ -13,11 +12,10 @@ pip install -r requirements.txt
 
 ### Usage
 
-Run ``visualizer.py`` and enter a differential equation in LaTeX form or select
-one of the provided examples:
+Run the application and open `http://localhost:5000` in a browser:
 
 ```bash
-python3 visualizer.py
+python3 app.py
 ```
 
-After solving, a graph is saved to ``solution.png`` in the current directory.
+Type a differential equation in LaTeX form or use the provided buttons and examples. After solving, the resulting expression and plot are displayed on the page.

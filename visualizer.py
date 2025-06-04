@@ -51,7 +51,21 @@ def substitute_undef_funcs(expr):
     return expr
 
 
-def solve_and_plot(eq: Eq):
+def solve_and_plot(eq: Eq, out_file: str = 'solution.png'):
+    """Solve the equation and save a plot.
+
+    Parameters
+    ----------
+    eq : sympy.Eq
+        Equation to solve.
+    out_file : str
+        Output path for the generated plot.
+
+    Returns
+    -------
+    sympy.Eq
+        Solved equation.
+    """
     funcs = list(eq.atoms(sp.Function))
     if not funcs:
         raise ValueError("Could not determine dependent variable in equation")
@@ -65,7 +79,7 @@ def solve_and_plot(eq: Eq):
             sol_expr = substitute_constants(sol_expr)
             sol_expr = substitute_undef_funcs(sol_expr)
             p = plot(sol_expr, (var, -5, 5), show=False)
-            p.save('solution.png')
+            p.save(out_file)
             sol = sp.Eq(func, sol_expr)
         else:
             sol = sp.pdsolve(eq)
@@ -75,16 +89,13 @@ def solve_and_plot(eq: Eq):
                 sol_expr = substitute_constants(sol_expr)
                 sol_expr = substitute_undef_funcs(sol_expr)
                 p = plot3d(sol_expr, (var1, -5, 5), (var2, -5, 5), show=False)
-                p.save('solution.png')
+                p.save(out_file)
                 sol = sp.Eq(func, sol_expr)
             else:
-                print("More than two independent variables - plotting not supported")
-    except NotImplementedError:
-        print("Sympy could not solve this equation.")
-        return
-    print("Solution:")
-    sp.pprint(sol)
-    print("Graph saved to solution.png")
+                raise NotImplementedError("More than two independent variables")
+    except NotImplementedError as e:
+        raise NotImplementedError("SymPy could not solve this equation") from e
+    return sol
 
 
 def main():
@@ -99,7 +110,10 @@ def main():
     except Exception as e:
         print("Error parsing equation:", e)
         sys.exit(1)
-    solve_and_plot(eq)
+    sol = solve_and_plot(eq)
+    print("Solution:")
+    sp.pprint(sol)
+    print("Graph saved to solution.png")
 
 if __name__ == "__main__":
     main()
