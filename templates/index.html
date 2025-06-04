@@ -1,0 +1,86 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Differential Equation Visualizer</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2em; }
+        .buttons { margin-bottom: 1em; }
+        .buttons button {
+            margin: 4px;
+            padding: 6px 10px;
+            background-color: #1976d2;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .buttons button:hover {
+            background-color: #125a9c;
+        }
+        textarea { width: 100%; }
+    </style>
+</head>
+<body>
+    <h1>Differential Equation Visualizer</h1>
+
+    <div class="buttons">
+        <button type="button" onclick="insert('\\\\frac{d}{dx}')">d/dx</button>
+        <button type="button" onclick="insert('\\\\partial')">&part;</button>
+        <button type="button" onclick="insert('\\\\frac{\\partial^2}{\\partial x^2}')">&part;&sup2;/&part;x&sup2;</button>
+        {% for ex in examples %}
+            <button type="button" onclick="setExample('{{ ex|escapejs }}')">\( {{ ex }} \)</button>
+        {% endfor %}
+    </div>
+
+    <form method="post">
+        <textarea id="latex" name="latex" rows="3" oninput="updatePreview()">{{ latex_input }}</textarea>
+        <div id="preview">\( {{ latex_input }} \)</div>
+        <button type="submit">Solve</button>
+    </form>
+
+    {% if error %}
+    <p style="color:red">{{ error }}</p>
+    {% endif %}
+
+    {% if solution_latex %}
+    <h2>Solution</h2>
+    <div>$$ {{ solution_latex }} $$</div>
+    {% if solution_steps %}
+    <h3>Steps</h3>
+    <ol>
+        {% for step in solution_steps %}
+        <li>{{ step }}</li>
+        {% endfor %}
+    </ol>
+    {% endif %}
+    {% endif %}
+
+    {% if image_url %}
+    <h2>Plot</h2>
+    <img src="/{{ image_url }}" alt="Solution plot">
+    {% endif %}
+
+    <script>
+    function updatePreview() {
+        const content = document.getElementById('latex').value;
+        document.getElementById('preview').innerHTML = '\\(' + content + '\\)';
+        MathJax.typesetPromise();
+    }
+    function insert(text) {
+        const el = document.getElementById('latex');
+        const start = el.selectionStart;
+        const end = el.selectionEnd;
+        el.setRangeText(text, start, end, 'end');
+        updatePreview();
+    }
+    function setExample(text) {
+        document.getElementById('latex').value = text;
+        updatePreview();
+    }
+    window.addEventListener('load', updatePreview);
+    </script>
+</body>
+</html>
